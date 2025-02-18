@@ -1,0 +1,18 @@
+@import "./local/TopUI.css";
+
+@font-face {
+  font-family: 'Inter';
+  src: "@fonts/Inter/Inter-VariableFont_opsz,wght.ttf";
+}
+
+:root {
+  --light-c1: #f5f5f7;
+  --light-c2: #D1D1D6;
+  --dark-c: #000000;
+
+}
+
+
+body {
+  margin: 0;
+}

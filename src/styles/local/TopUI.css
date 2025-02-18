@@ -1,0 +1,42 @@
+.top-ui {
+    height: 45px;
+    width: 100%;
+    color: var(--light-c2);
+    background-color: var(--dark-c);
+    opacity: 80%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .navigation-panel {
+        height: inherit;
+
+        display: flex;
+
+        .navigation-block {
+            align-items: center;
+            display: flex;
+            height: inherit;
+            width: inherit;
+            font-family: 'Inter';
+            font-size: 13px;
+            font-weight: 400;
+            padding-left: 16px;
+            padding-right: 16px;
+            transition:
+                color 0.2s fill 0.2s;
+            fill: var(--light-c2);
+
+            &:hover {
+                color: var(--light-c1);
+                fill: var(--light-c1);
+                cursor: pointer
+            }
+
+            .svg {
+                width: 16px;
+            }
+        }
+    }
+}
