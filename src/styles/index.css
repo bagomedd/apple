@@ -1,4 +1,7 @@
 @import "./local/TopUI.css";
+@import "./local/Innovation.css";
+@import "./local/Layout.css";
+
 
 @font-face {
   font-family: 'Inter';
@@ -9,7 +12,7 @@
   --light-c1: #f5f5f7;
   --light-c2: #D1D1D6;
   --dark-c: #000000;
-
+  --blue-c: #0071E3;
 }
 
 

@@ -1,0 +1,74 @@
+.innovation-block {
+    grid-row: span 7;
+    grid-column: span 2;
+    height: 700px;
+    width: 100vw;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    &.iphone-16 {
+        background-image: url("/public/iphone-16.png");
+    }
+
+    .innovation-container {
+        width: inherit;
+        height: inherit;
+        display: flex;
+        justify-content: center;
+        text-decoration: none;
+        outline: none;
+
+        .information {
+            font-family: Inter;
+            color: var(--light-c1);
+            padding-top: 100px;
+
+
+            .hero-text {
+                justify-self: center;
+                font-size: 42pt;
+                font-weight: 600;
+            }
+
+            .additional-text {
+                justify-self: center;
+                font-size: 20pt;
+                font-weight: 400;
+            }
+
+            .button-block {
+                justify-self: center;
+                padding-top: 20px;
+
+                .btn {
+                    height: 48px;
+                    margin-left: 10px;
+                    margin-right: 10px;
+                    border-radius: 24px;
+                    font-family: Inter;
+                    padding-left: 25px;
+                    padding-right: 25px;
+                    font-size: 12pt;
+                    border-style: solid;
+
+                    &.iphone-16-learn-more {
+                        background-color: var(--blue-c);
+                        color: var(--light-c1);
+                        border-color: var(--blue-c);
+                    }
+
+                    &.iphone-16-buy {
+                        background: none;
+                        color: var(--blue-c);
+                        border-color: var(--blue-c);
+
+                        &:hover {
+                            background-color: var(--blue-c);
+                            color: var(--light-c1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

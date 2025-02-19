@@ -3,13 +3,14 @@
     width: 100%;
     color: var(--light-c2);
     background-color: var(--dark-c);
-    opacity: 80%;
-
+    opacity: 70%;
+    position: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
 
     .navigation-panel {
+        opacity: 100%;
         height: inherit;
 
         display: flex;
