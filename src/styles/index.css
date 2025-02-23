@@ -1,7 +1,11 @@
 @import "./local/TopUI.css";
 @import "./local/Innovation.css";
-@import "./local/Layout.css";
-
+@import "./local/InnovationLayout.css";
+@import "./local/HeroProduct.css";
+@import "./local/HeroProductLayout.css";
+@import "./Common.css";
+@import "./local/TVCarousel.css";
+@import "./local/TVCarouselElement.css";
 
 @font-face {
   font-family: 'Inter';
@@ -9,7 +13,8 @@
 }
 
 :root {
-  --light-c1: #f5f5f7;
+  --light-c: #FFFFFF;
+  --light-c1: #F5F5F7;
   --light-c2: #D1D1D6;
   --dark-c: #000000;
   --blue-c: #0071E3;
@@ -17,5 +22,6 @@
 
 
 body {
+  font-family: inter;
   margin: 0;
 }

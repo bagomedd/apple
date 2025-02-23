@@ -1,0 +1,10 @@
+.hero-product-layout {
+
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(2, calc((100% - 14px * 3) / 2));
+    grid-template-rows: repeat(3, 580px);
+    column-gap: 14px;
+    row-gap: 14px;
+    justify-content: center;
+}

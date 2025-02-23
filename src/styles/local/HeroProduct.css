@@ -1,0 +1,72 @@
+.hero-product {
+    z-index: 1;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: var(--light-c1);
+    font-family: Inter;
+    display: flex;
+    justify-content: center;
+    /* Разобраться почему блоки наслаиваются */
+
+    .information {
+        position: relative;
+        z-index: 3;
+        margin-top: 50px;
+
+
+        .hero-text {
+            z-index: 4;
+            justify-self: center;
+            font-size: 32pt;
+            font-weight: 500;
+        }
+
+        .description {
+            margin-top: 4px;
+            justify-self: center;
+            font-size: 14pt;
+            font-weight: 400;
+        }
+
+        .button-container {
+            justify-self: center;
+            margin-top: 7px;
+
+            .btn {
+                margin-left: 5px;
+                margin-right: 7px;
+                margin-top: 10px;
+                height: 35px;
+                padding-left: 18px;
+                padding-right: 18px;
+                border-width: 1px;
+                font-size: 10pt;
+
+                &.learn-more {
+                    color: var(--light-c1);
+                    border-color: var(--blue-c);
+                    background-color: var(--blue-c);
+                }
+
+                &.buy {
+                    color: var(--blue-c);
+                    border-color: var(--blue-c);
+                }
+            }
+        }
+
+    }
+
+    .image {
+        flex-grow: 1;
+        z-index: 2;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        background-image: url(/public/promo_apple_watch_series_10_large.jpg);
+    }
+}

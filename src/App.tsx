@@ -1,12 +1,17 @@
 //@ts-ignore 
 import { TopUI } from "@components/Layout/TopUI.tsx";
 //@ts-ignore
-import { Layout } from "@components/Layout/Layout";
+import { InnovationLayout } from "@components/Layout/InnovationLayout";
+//@ts-ignore 
+import { HeroProductLayout } from "@components/Layout/HeroProductLayout";
+import { TVCarousel } from "./Components/Layout/TVCarousel";
 function App() {
   return (
     <>
       <TopUI />
-      <Layout />
+      <InnovationLayout />
+      <HeroProductLayout />
+      <TVCarousel />
     </>
   )
 }

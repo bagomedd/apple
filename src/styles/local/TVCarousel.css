@@ -1,0 +1,11 @@
+.tv-carousel {
+    margin-top: 12px;
+    width: 100%;
+    overflow: hidden;
+
+    .tv-carousel-row {
+        display: flex;
+    }
+
+
+}

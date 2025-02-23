@@ -1,0 +1,8 @@
+.innovation-layout {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    row-gap: 12px;
+    grid-template-rows: repeat(2, 700px);
+
+
+}

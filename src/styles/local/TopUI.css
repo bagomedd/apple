@@ -1,13 +1,16 @@
 .top-ui {
+    z-index: 5;
     height: 45px;
     width: 100%;
     color: var(--light-c2);
     background-color: var(--dark-c);
-    opacity: 70%;
+    opacity: 90%;
     position: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
+    /* https://ru.stackoverflow.com/questions/654206/Прозрачность-и-размытость-цветного-фона-блока */
+
 
     .navigation-panel {
         opacity: 100%;
