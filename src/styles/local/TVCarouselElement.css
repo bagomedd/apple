@@ -1,19 +1,35 @@
 .tv-carousel-element {
-    margin-left: 12px;
-    min-width: 1250px;
+    margin-right: 12px;
+    /*margin-left: 12px; */
+    /* min-width: 1250px; 
+    max-width: 1250px;  */
     height: 667px;
     position: relative;
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
 
     .information {
+        position: relative;
         color: white;
-        font-size: 14pt;
+        font-size: 16pt;
         z-index: 3;
+        padding-bottom: 45px;
+        padding-left: 70px;
 
-        .btn {}
 
-        .bold-description {}
+
+        .btn {
+            height: 60px;
+            border-radius: 30px;
+            font-size: 18pt;
+            border: 0px;
+            padding-left: 25px;
+            padding-right: 25px;
+        }
+
+        .bold-description {
+            padding-left: 20px;
+        }
 
         .description {}
     }
@@ -25,9 +41,18 @@
         background-size: cover;
 
         position: absolute;
-        background-image: url(/public/hero_tv_the_gorge.jpg);
+        /* background-image: url(/public/hero_tv_the_gorge.jpg); */
         width: 100%;
         height: 100%;
+    }
+
+    .tv-carousel-filter {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 5;
+        background-color: var(--light-c);
+        transition: filter 1s;
     }
 
 }

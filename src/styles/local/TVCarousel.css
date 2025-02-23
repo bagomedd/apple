@@ -3,9 +3,24 @@
     width: 100%;
     overflow: hidden;
 
-    .tv-carousel-row {
+    position: relative;
+
+
+    .tv-carousel-container {
         display: flex;
+
+        justify-content: center;
+
+        .tv-carousel-window {
+            /* border: 12px var(--light-c2) solid; */
+
+            width: 1250px;
+            overflow: visible;
+
+            .tv-carousel-row {
+                display: flex;
+
+            }
+        }
     }
-
-
 }
