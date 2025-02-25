@@ -1,0 +1,34 @@
+{
+    "tvCarouselInfo": [
+        {
+            "imageUrl": "/public/hero_tv_the_gorge.jpg"
+        },
+        {
+            "imageUrl": "/public/hero_tv_severance.jpg"
+        },
+        {
+            "imageUrl": "/public/hero_tv_surface.jpg"
+        },
+        {
+            "imageUrl": "/public/hero_tv_onside.jpg"
+        },
+        {
+            "imageUrl": "/public/hero_tv_season_pass.jpg"
+        },
+        {
+            "imageUrl": "/public/hero_tv_prime_target.jpg"
+        },
+        {
+            "imageUrl": "/public/hero_tv_mythic_quest.jpg"
+        },
+        {
+            "imageUrl": "/public/hero_tv_silo.jpg"
+        },
+        {
+            "imageUrl": "/public/hero_tv_shrinking.jpg"
+        },
+        {
+            "imageUrl": "/public/hero_tv_ted_lasso.jpg"
+        }
+    ]
+}

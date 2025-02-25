@@ -1,69 +1,97 @@
 import { TVCarouselElement } from "../common/TVCarouselElement";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import * as TVCarouselJson from "./TVCarousel.json";
 
 export function TVCarousel() {
+    const JSON_RECIEVED_INFO = TVCarouselJson.tvCarouselInfo;
     const CAROUSEL_MARGIN_LEFT = 12;
     const ELEMENT_WIDTH = 1250;
+    const ELEMENTS_COUNT = 10;
 
     const [choosenElement, setChoosenElement] = useState(1);
     const [offset, setOffset] = useState(-ELEMENT_WIDTH);
+    // DECLARING USEREFS
+    const carousel = useRef<HTMLDivElement | null>(null);
+    const carouselStyles = useRef<CSSStyleDeclaration | null>(null);
+    //
+    const carouselElements = useRef<Array<HTMLDivElement>>([]);
+    const pushCarouselElements = (el: HTMLElement) => carouselElements.current.push(el);
+    const carouselElementsStyles = useRef<Array<CSSStyleDeclaration>>([]);
+    // 
+    const filters = useRef<Array<HTMLDivElement>>([]);
+    const pushFilters = (el: HTMLElement) => filters.current.push(el);
+    const filtersStyles = useRef<Array<CSSStyleDeclaration>>([]);
+    // 
+    let id = -2;
+    let json_info = JSON_RECIEVED_INFO.map(function (imageUrl) {
+        id += 1;
+        return ([id, imageUrl.imageUrl, "carouselElements", "filters"])
+    })
 
 
     useEffect(() => {
         console.log("useEffect [] is called");
-        const carouselElements = document.getElementsByClassName('tv-carousel-element');
-        // возвращает HTMLCollectionOf<Element>
-        const carousel = (document.getElementsByClassName("tv-carousel-row")).item(0) as HTMLElement;
-        //getElementById() возвращает HTMLElement
-        const filters = document.getElementsByClassName("tv-carousel-filter");
-        for (let i = 0; i < carouselElements.length; i++) {
-            let carouselElementsStyles = (carouselElements.item(i) as HTMLElement).style;
-            let filterStyles = (filters.item(i) as HTMLElement).style;
 
-            // Конвертация Element в HTMLElement
+        if (carousel.current) {
+            carouselStyles.current = carousel.current!.style;
+        }
+        else {
+            console.log("Carousel and CarouselStyles is null!");
+        }
+        if (carouselElements.current) {
+            for (let i = 0; i < ELEMENTS_COUNT; i++) {
+                if (carouselElements.current[i]) {
+
+                    carouselElementsStyles.current![i] = (carouselElements.current![i] as HTMLElement).style
+                }
+                else { console.log("CarouselELements" + i + " is null!") }
+            }
+        }
+        if (filters.current) {
+            for (let i = 0; i < ELEMENTS_COUNT; i++) {
+                if (filters.current![i]) {
+                    filtersStyles.current![i] = (filters.current![i] as HTMLElement).style
+                }
+                else {
+                    console.log("Filters[" + i + "] is null!");
+                }
+            }
+        }
+
+        // ASSIGNING  USEREFS
+
+
+
+        for (let i = 0; i < ELEMENTS_COUNT; i++) {
             if (i != choosenElement + 1) {
-                filterStyles.filter = "opacity(70%)";
+                filtersStyles.current![i].filter = "opacity(70%)";
             }
             else {
-                filterStyles.filter = "opacity(0%)"
+                filtersStyles.current![i].filter = "opacity(0%)"
             }
-            let carouselStyles = carousel!.style;
-            carouselElementsStyles.minWidth = ELEMENT_WIDTH + "px";
-            carouselElementsStyles.maxWidth = ELEMENT_WIDTH + "px";
-
-
-            //carouselStyles.marginLeft = offset + "px";
-
-
-            // carouselStyles.marginLeft = -CAROUSEL_MARGIN_LEFT - ELEMENT_WIDTH + "px";
+            carouselStyles.current! = (carousel.current! as HTMLElement).style;
+            carouselElementsStyles.current![i].minWidth = ELEMENT_WIDTH + "px";
+            carouselElementsStyles.current![i].maxWidth = ELEMENT_WIDTH + "px";
         }
-        //HTMLCollectionOf<Element>.item
-        //console.log(elements);
-        // console.log(typeof (inlineStyles))
-        // console.log(inlineStyles);
+        carouselStyles.current!.transition = "margin-left 1s";
+        // ASSIGNEMENT CAROUSELELEMENTS WIDTH AND FINLTERS OPACITY AND TRANSITION
     }, [])
     useEffect(() => {
-        const carousel = (document.getElementsByClassName("tv-carousel-row")).item(0) as HTMLElement;
-        let carouselStyles = carousel!.style;
-
-        carouselStyles.marginLeft = offset - CAROUSEL_MARGIN_LEFT + "px";
-        carouselStyles.transition = "margin-left 1s";
-
-        console.log("useEffect [offset] is called");
+        carouselStyles.current!.marginLeft = offset - CAROUSEL_MARGIN_LEFT + "px";
     }, [offset])
+    // MOVING CAROUSEL SCRIPT
 
     useEffect(() => {
-        const filters = document.getElementsByClassName("tv-carousel-filter");
-        // ПОФИКСИТЬ < 11
-        if (0 < choosenElement && choosenElement < 11) {
-            let filterStyles = (filters.item(choosenElement + 1) as HTMLElement).style;
+        if (0 < choosenElement && choosenElement < ELEMENTS_COUNT) {
+            let filterStyles = (filters.current![(choosenElement + 1)] as HTMLElement).style;
             filterStyles.filter = "opacity(70%)";
-            filterStyles = (filters.item(choosenElement - 1) as HTMLElement).style;
+            filterStyles = (filters.current![(choosenElement - 1)] as HTMLElement).style;
             filterStyles.filter = "opacity(70%)";
-            filterStyles = (filters.item(choosenElement) as HTMLElement).style;
+            filterStyles = (filters.current![(choosenElement)] as HTMLElement).style;
             filterStyles.filter = "opacity(0%)";
         }
     }, [choosenElement])
+    // CHANGING FILTERS OPACITY WHEN MOVING
 
     function handleLeftArrowClick() {
         console.log("left handler is called");
@@ -76,52 +104,26 @@ export function TVCarousel() {
         setChoosenElement(choosenElement + 1);
     }
 
-    // Здесь useEffect вызывается два раза из-за
-    // strictMode, это не влияет на код, но с этим
-    // нужно разобраться
-
     return (
         <div className="tv-carousel">
             <div className="tv-carousel-container">
                 <div className="tv-carousel-window">
-                    <div className="tv-carousel-row">
+                    <div className="tv-carousel-row" ref={carousel}>
 
-                        <TVCarouselElement
-                            id={-1}
-                            imageUrl="/public/hero_tv_ted_lasso.jpg" />
-                        <TVCarouselElement
-                            id={0}
-                            imageUrl="/public/hero_tv_the_gorge.jpg" />
-                        <TVCarouselElement
-                            id={1}
-                            imageUrl="/public/hero_tv_severance.jpg" />
-                        <TVCarouselElement
-                            id={2}
-                            imageUrl="/public/hero_tv_surface.jpg" />
-                        <TVCarouselElement
-                            id={3}
-                            imageUrl="/public/hero_tv_onside.jpg" />
-                        <TVCarouselElement
-                            id={4}
-                            imageUrl="/public/hero_tv_season_pass.jpg" />
-                        <TVCarouselElement
-                            id={5}
-                            imageUrl="/public/hero_tv_prime_target.jpg" />
-                        <TVCarouselElement
-                            id={6}
-                            imageUrl="/public/hero_tv_mythic_quest.jpg" />
-                        <TVCarouselElement
-                            id={7}
-                            imageUrl="/public/hero_tv_silo.jpg" />
-                        <TVCarouselElement
-                            id={8}
-                            imageUrl="/public/hero_tv_shrinking.jpg" />
-                        <TVCarouselElement
-                            id={9}
-                            imageUrl="/public/hero_tv_ted_lasso.jpg" />
-                        <TVCarouselElement
-                            id={10}
-                            imageUrl="/public/hero_tv_the_gorge.jpg" />
+                        {/* Можно ли использовать htmlELement для htmlDivElement??*/}
+                        {
+                            json_info.map(function (elementInfo) {
+                                let id = elementInfo[0] as number;
+
+                                return (
+                                    <TVCarouselElement
+                                        key={id}
+                                        id={id}
+                                        imageUrl={elementInfo[1] as string}
+                                        carouselElementsRef={pushCarouselElements}
+                                        filtersRef={pushFilters}
+                                    />);
+                            })}
 
                     </div>
                 </div>
@@ -132,3 +134,63 @@ export function TVCarousel() {
         </div>
     );
 }
+{/*                        <TVCarouselElement
+                            carouselElementsRef={carouselElements}
+                            filtersRef={filters}
+                            id={-1}
+                            imageUrl="/public/hero_tv_ted_lasso.jpg" />
+                        <TVCarouselElement
+                            carouselElementsRef={carouselElements}
+                            filtersRef={filters}
+                            id={0}
+                            imageUrl="/public/hero_tv_the_gorge.jpg" />
+                        <TVCarouselElement
+                            carouselElementsRef={carouselElements}
+                            filtersRef={filters}
+                            id={1}
+                            imageUrl="/public/hero_tv_severance.jpg" />
+                        <TVCarouselElement
+                            carouselElementsRef={carouselElements}
+                            filtersRef={filters}
+                            id={2}
+                            imageUrl="/public/hero_tv_surface.jpg" />
+                        <TVCarouselElement
+                            carouselElementsRef={carouselElements}
+                            filtersRef={filters}
+                            id={3}
+                            imageUrl="/public/hero_tv_onside.jpg" />
+                        <TVCarouselElement
+                            carouselElementsRef={carouselElements}
+                            filtersRef={filters}
+                            id={4}
+                            imageUrl="/public/hero_tv_season_pass.jpg" />
+                        <TVCarouselElement
+                            carouselElementsRef={carouselElements}
+                            filtersRef={filters}
+                            id={5}
+                            imageUrl="/public/hero_tv_prime_target.jpg" />
+                        <TVCarouselElement
+                            carouselElementsRef={carouselElements}
+                            filtersRef={filters}
+                            id={6}
+                            imageUrl="/public/hero_tv_mythic_quest.jpg" />
+                        <TVCarouselElement
+                            carouselElementsRef={carouselElements}
+                            filtersRef={filters}
+                            id={7}
+                            imageUrl="/public/hero_tv_silo.jpg" />
+                        <TVCarouselElement
+                            carouselElementsRef={carouselElements}
+                            filtersRef={filters}
+                            id={8}
+                            imageUrl="/public/hero_tv_shrinking.jpg" />
+                        <TVCarouselElement
+                            carouselElementsRef={carouselElements}
+                            filtersRef={filters}
+                            id={9}
+                            imageUrl="/public/hero_tv_ted_lasso.jpg" />
+                        <TVCarouselElement
+                            carouselElementsRef={carouselElements}
+                            filtersRef={filters}
+                            id={10}
+                            imageUrl="/public/hero_tv_the_gorge.jpg" /> */}
