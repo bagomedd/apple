@@ -6,13 +6,14 @@
     position: relative;
 
 
+
     .tv-carousel-container {
         display: flex;
 
         justify-content: center;
 
         .tv-carousel-window {
-            /* border: 12px var(--light-c2) solid; */
+            /* border: 12px var(--blue-c) solid; */
 
             width: 1250px;
             overflow: visible;
