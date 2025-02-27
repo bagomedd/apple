@@ -50,13 +50,9 @@
         position: absolute;
         width: 100%;
         height: 100%;
-        z-index: 5;
+        z-index: 3;
         background-color: var(--light-c);
         transition: filter 1s;
     }
 
 }
-
-#tv-carousel-element--1 {}
-
-#tv-carousel-element-1 {}

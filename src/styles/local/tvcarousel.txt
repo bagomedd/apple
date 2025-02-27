@@ -6,26 +6,26 @@
     position: relative;
 
 
+
     .tv-carousel-container {
 
         display: flex;
 
         justify-content: center;
-        position: relative;
 
         .btn {
             position: absolute;
             z-index: 4;
             height: 100%;
             border-radius: 0px;
-            opacity: 0;
-            /* &.btn-left {
+
+            &.btn-left {
                 left: 0;
             }
 
             &.btn-right {
                 right: 0;
-            } */
+            }
 
         }
 
@@ -41,23 +41,6 @@
                 display: flex;
 
             }
-        }
-    }
-
-    .switcher-row {
-        margin-top: 12px;
-        display: flex;
-        width: 100%;
-        justify-content: center;
-
-        .switcher {
-            border: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 10px;
-            background-color: var(--gray-c1);
-            margin-left: 5px;
-            margin-right: 5px;
         }
     }
 }
