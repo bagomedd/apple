@@ -114,8 +114,9 @@ export function TVCarousel() {
     let id = -1;
     let json_info = JSON_RECIEVED_INFO.map(function (imageUrl) {
         id += 1;
-        return ([id, imageUrl.imageUrl, "carouselElements", "filters"])
+        return ([id, imageUrl.imageUrl])
     })
+
     // JSON READING 
 
 
@@ -182,6 +183,7 @@ export function TVCarousel() {
 
 
         }
+
 
         buttonLeftStyles.current!.width = BLOCK_WIDTH + "px";
         buttonLeftStyles.current!.marginLeft = -2 * BLOCK_WIDTH + "px";
@@ -323,7 +325,6 @@ export function TVCarousel() {
                         {
                             json_info.map(function (elementInfo) {
                                 let id = elementInfo[0] as number;
-
                                 return (
                                     <TVCarouselElement
                                         key={id}
@@ -333,6 +334,7 @@ export function TVCarousel() {
                                         filtersRef={pushFilters}
                                     />);
                             })}
+
 
                     </div>
                 </div>
