@@ -108,6 +108,33 @@ export function TVCarousel() {
             }
         }
     }
+
+    function calcNextChoosenELement(_choosenElement: number, _moveDir: String) {
+        console.log("calcChoos", _choosenElement);
+        if (_moveDir == 'l') {
+            if (_choosenElement - 1 >= 0) {
+                // setChoosenElement(choosenElement - 1);
+                console.log(_choosenElement - 1);
+                return (_choosenElement - 1);
+            }
+            else {
+                console.log(_choosenElement - 1 + ELEMENTS_COUNT);
+                return (_choosenElement - 1 + ELEMENTS_COUNT);
+            }
+        }
+        else if (_moveDir == 'r') {
+            if (_choosenElement + 1 < ELEMENTS_COUNT) {
+                // +1
+                console.log(_choosenElement + 1);
+                return (_choosenElement + 1);
+            }
+            else {
+                console.log(_choosenElement + 1 - ELEMENTS_COUNT);
+                return (_choosenElement + 1 - ELEMENTS_COUNT);
+            }
+        }
+    }
+
     function calcIndexL() {
         let _indexLL = choosenElement - 1
         if (_indexLL > 0) {
@@ -277,14 +304,8 @@ export function TVCarousel() {
         setOffset(prevOffset => prevOffset + BLOCK_WIDTH);
 
         moveDir.current = 'l';
-        if (choosenElement - 1 >= 0) {
-            // setChoosenElement(choosenElement - 1);
-
-            setChoosenElement(prevChoosenElement => prevChoosenElement - 1)
-        }
-        else {
-            setChoosenElement(prevChoosenElement => prevChoosenElement - 1 + ELEMENTS_COUNT);
-        }
+        let tempChoosenElement = calcNextChoosenELement(choosenElement, moveDir.current!);
+        setChoosenElement(prevChoosenElement => Number(tempChoosenElement))
     }
     function handleRightArrowClick() {
         console.log('rightarrowclock');
@@ -292,16 +313,10 @@ export function TVCarousel() {
         setOffset(prevOffset => prevOffset - BLOCK_WIDTH);
 
         moveDir.current = 'r';
-        if (choosenElement + 1 < ELEMENTS_COUNT) {
-            // +1
-            setChoosenElement(prevChoosenElement => prevChoosenElement + 1);
-
-        }
-        else {
-            setChoosenElement(prevChoosenElement => prevChoosenElement + 1 - ELEMENTS_COUNT);
-
-        }
-
+        console.log(choosenElement, moveDir.current);
+        let tempChoosenElement = calcNextChoosenELement(choosenElement, moveDir.current);
+        console.log(tempChoosenElement);
+        setChoosenElement(prevChoosenElement => Number(tempChoosenElement));
     }
     function switchHandler(event: React.MouseEvent<HTMLButtonElement>) {
         let switcherNumber = Number(event.currentTarget.dataset.number);
