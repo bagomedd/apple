@@ -22,6 +22,7 @@ export default defineConfig({
       '@svg': "/src/svg",
       '@utils': "/src/utils",
       '@fonts': "/src/fonts",
+      '@pages': "/src/pages",
 
     },
   },

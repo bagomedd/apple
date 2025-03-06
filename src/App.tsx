@@ -1,17 +1,19 @@
-//@ts-ignore 
-import { TopUI } from "@components/Layout/TopUI.tsx";
 //@ts-ignore
-import { InnovationLayout } from "@components/Layout/InnovationLayout";
-//@ts-ignore 
-import { HeroProductLayout } from "@components/Layout/HeroProductLayout";
-import { TVCarousel } from "./Components/Layout/TVCarousel";
+import { HeroPage } from "@pages/HeroPage.tsx";
+//@ts-ignore
+import { NotFoundPage } from "@pages/NotFoundPage.tsx";
+//@ts-ignore
+import { RegisterPage } from "@pages/RegisterPage.tsx";
+import { Routes, Route } from 'react-router';
+
 function App() {
   return (
     <>
-      <TopUI />
-      <InnovationLayout />
-      <HeroProductLayout />
-      <TVCarousel />
+      <Routes>
+        <Route path="/" element={<HeroPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
     </>
   )
 }

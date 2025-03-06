@@ -1,10 +1,11 @@
 .tv-carousel {
     margin-top: 12px;
     width: 100%;
-    /* overflow: hidden; */
+
+    overflow: hidden;
 
     position: relative;
-
+    margin-bottom: 12px;
 
 
     .tv-carousel-container {
@@ -35,7 +36,7 @@
         .tv-carousel-window {
             /* border: 12px var(--blue-c) solid; */
 
-            width: 1250px;
+            /* width: 1250px; */
             overflow: visible;
 
             .tv-carousel-row {
@@ -53,12 +54,13 @@
 
         .switcher {
             border: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 10px;
+            width: 12px;
+            height: 12px;
+            border-radius: 6px;
             background-color: var(--gray-c1);
             margin-left: 5px;
             margin-right: 5px;
+            cursor: pointer;
         }
     }
 }

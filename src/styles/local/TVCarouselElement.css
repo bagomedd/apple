@@ -1,9 +1,10 @@
 .tv-carousel-element {
     margin-right: 12px;
     /*margin-left: 12px; */
-    /* min-width: 1250px; 
-    max-width: 1250px;  */
-    height: 667px;
+    min-width: 1000px;
+    max-width: 1000px;
+    /* width: 50px; */
+    height: 600px;
     position: relative;
     display: flex;
     flex-direction: column-reverse;

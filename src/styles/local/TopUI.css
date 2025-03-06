@@ -1,46 +1,55 @@
-.top-ui {
-    z-index: 5;
+.hero-header {
     height: 45px;
     width: 100%;
-    color: var(--light-c2);
-    background-color: var(--dark-c);
-    opacity: 90%;
-    position: fixed;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* https://ru.stackoverflow.com/questions/654206/Прозрачность-и-размытость-цветного-фона-блока */
 
-
-    .navigation-panel {
-        opacity: 100%;
-        height: inherit;
-
+    .top-ui {
+        z-index: 5;
+        height: 45px;
+        width: 100%;
+        color: var(--light-c2);
+        background-color: var(--dark-c);
+        opacity: 90%;
+        position: fixed;
         display: flex;
+        justify-content: center;
+        align-items: center;
+        /* https://ru.stackoverflow.com/questions/654206/Прозрачность-и-размытость-цветного-фона-блока */
 
-        .navigation-block {
-            align-items: center;
-            display: flex;
+
+        .navigation-panel {
+            opacity: 100%;
             height: inherit;
-            width: inherit;
-            font-family: 'Inter';
-            font-size: 13px;
-            font-weight: 400;
-            padding-left: 16px;
-            padding-right: 16px;
-            transition:
-                color 0.2s fill 0.2s;
-            fill: var(--light-c2);
 
-            &:hover {
-                color: var(--light-c1);
-                fill: var(--light-c1);
-                cursor: pointer
-            }
+            display: flex;
 
-            .svg {
-                width: 16px;
+            .navigation-block {
+                align-items: center;
+                display: flex;
+                height: inherit;
+                width: inherit;
+                font-family: 'Inter';
+                font-size: 13px;
+                font-weight: 400;
+                padding-left: 16px;
+                padding-right: 16px;
+                transition:
+                    color 0.2s fill 0.2s;
+                fill: var(--light-c2);
+
+                &:hover {
+                    color: var(--light-c1);
+                    fill: var(--light-c1);
+                    cursor: pointer
+                }
+
+                .svg {
+                    width: 16px;
+                }
             }
         }
+    }
+
+    .store-menu {
+        visibility: hidden;
     }
 }

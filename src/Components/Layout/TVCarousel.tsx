@@ -1,39 +1,34 @@
 import { TVCarouselElement } from "../common/TVCarouselElement";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, } from "react";
 // import { floor } from "Math";
 
-import * as TVCarouselJson from "./TVCarousel.json";
-import { StripTypeScriptTypesOptions } from "module";
+import * as TVCarouselJson from "../JSON/TVCarousel.json";
 
 export function TVCarousel() {
+
     const JSON_RECIEVED_INFO = TVCarouselJson.tvCarouselInfo;
     const CAROUSEL_MARGIN_LEFT = 12;
-    const ELEMENT_WIDTH = 1250;
     const ELEMENTS_COUNT = 10;
-    const BLOCK_WIDTH = ELEMENT_WIDTH + CAROUSEL_MARGIN_LEFT;
-    const CAROUSEL_WIDTH = BLOCK_WIDTH * ELEMENTS_COUNT;
     const MID_INDEX = Math.floor((ELEMENTS_COUNT - 1) / 2);
-    // px 
+
+    const CAROUSEL_WIDTH = useRef<number>(0);
+    const ELEMENT_WIDTH = useRef<number>(0);
+    const BLOCK_WIDTH = useRef<number>(0);
+
     const [choosenElement, setChoosenElement] = useState(MID_INDEX);
-    const [offset, setOffset] = useState(
-        -BLOCK_WIDTH * MID_INDEX
-        // STARTING OFFSET
-    );
+    const [offset, setOffset] = useState(0);
 
-    // const [indexRight, setIndexLeft] = useState(0);
-    // const [indexLeft, setIndexRight] = useState(0);
-    // HZ
-
-    // DECLARING USEREFS
     const carousel = useRef<HTMLDivElement | null>(null);
     const carouselStyles = useRef<CSSStyleDeclaration | null>(null);
     //
     const carouselElements = useRef<Array<HTMLDivElement>>([]);
-    const pushCarouselElements = (el: HTMLDivElement) => carouselElements.current.push(el);
+    // const pushCarouselElements = (el: HTMLDivElement) => carouselElements.current.push(el);
+    const pushCarouselElements = (el: HTMLDivElement) => { carouselElements.current.push(el) };
+
     const carouselElementsStyles = useRef<Array<CSSStyleDeclaration>>([]);
     // 
     const filters = useRef<Array<HTMLDivElement>>([]);
-    const pushFilters = (el: HTMLDivElement) => filters.current.push(el);
+    const pushFilters = (el: HTMLDivElement) => { filters.current.push(el) };
     const filtersStyles = useRef<Array<CSSStyleDeclaration>>([]);
     //
     const buttonLeft = useRef<HTMLButtonElement | null>(null);
@@ -42,8 +37,11 @@ export function TVCarousel() {
     const buttonRightStyles = useRef<CSSStyleDeclaration | null>(null);
     //
     const switchers = useRef<Array<HTMLButtonElement>>([]);
-    const pushSwitchers = (el: HTMLButtonElement) => switchers.current.push(el);
+    const pushSwitchers = (el: HTMLButtonElement) => { switchers.current.push(el) };
+
     const switchersStyles = useRef<Array<CSSStyleDeclaration>>([]);
+    //
+    const tvCarouselWindow = useRef<HTMLDivElement | null>(null);
     //
     const elementsOffsets = useRef<Array<number>>(new Array(ELEMENTS_COUNT).fill(0));
     // ELEMENTS OFFSETS, INITITALLY ARRAY OF 0
@@ -67,9 +65,7 @@ export function TVCarousel() {
         return localIndexLL;
     }
     function calcIndexRR(_choosenElement: number) {
-        console.log('CHOS ELE IN CALC', _choosenElement);
         let localIndexRR = _choosenElement + Math.floor(ELEMENTS_COUNT / 2)
-        console.log('LOCAL INDEXRR')
         if (localIndexRR > 0) {
             localIndexRR %= ELEMENTS_COUNT
         }
@@ -83,27 +79,22 @@ export function TVCarousel() {
     }
 
     function calcChoosenELement(_choosenElement: number, _moveDir: String) {
-        console.log("calcChoos", _choosenElement);
         if (_moveDir == 'l') {
             if (_choosenElement - 1 >= 0) {
                 // -1
                 // setChoosenElement(choosenElement - 1);
-                console.log(_choosenElement);
                 return (_choosenElement);
             }
             else {
-                console.log(_choosenElement + ELEMENTS_COUNT);
                 return (_choosenElement + ELEMENTS_COUNT);
             }
         }
         else if (_moveDir == 'r') {
             if (_choosenElement + 1 < ELEMENTS_COUNT) {
                 // +1
-                console.log(_choosenElement);
                 return (_choosenElement);
             }
             else {
-                console.log(_choosenElement - ELEMENTS_COUNT);
                 return (_choosenElement - ELEMENTS_COUNT);
             }
         }
@@ -153,7 +144,8 @@ export function TVCarousel() {
             for (let i = 0; i < ELEMENTS_COUNT; i++) {
                 if (carouselElements.current[i]) {
 
-                    carouselElementsStyles.current![i] = (carouselElements.current![i] as HTMLElement).style
+                    carouselElementsStyles.current![i] = (carouselElements.current![i] as HTMLElement).style;
+
                 }
                 else { console.log("CarouselELements" + i + " is null!") }
             }
@@ -200,18 +192,21 @@ export function TVCarousel() {
                 switchersStyles.current![i].background = "var(--gray-c2)";
                 // FIX
             }
-            carouselElementsStyles.current![i].minWidth = ELEMENT_WIDTH + "px";
-            carouselElementsStyles.current![i].maxWidth = ELEMENT_WIDTH + "px";
+            ELEMENT_WIDTH.current = carouselElements.current[i].getBoundingClientRect().width;
+            BLOCK_WIDTH.current = ELEMENT_WIDTH.current + CAROUSEL_MARGIN_LEFT;
+            CAROUSEL_WIDTH.current = BLOCK_WIDTH.current * ELEMENTS_COUNT;
 
-
+            tvCarouselWindow.current!.style.width = ELEMENT_WIDTH.current + "px";
+            setOffset(-BLOCK_WIDTH.current * MID_INDEX);
+            // FIX
         }
 
 
-        buttonLeftStyles.current!.width = BLOCK_WIDTH + "px";
-        buttonLeftStyles.current!.marginLeft = -2 * BLOCK_WIDTH + "px";
+        buttonLeftStyles.current!.width = BLOCK_WIDTH.current + "px";
+        buttonLeftStyles.current!.marginLeft = -2 * BLOCK_WIDTH.current + "px";
 
-        buttonRightStyles.current!.width = BLOCK_WIDTH + "px";
-        buttonRightStyles.current!.marginLeft = 2 * BLOCK_WIDTH + "px";
+        buttonRightStyles.current!.width = BLOCK_WIDTH.current + "px";
+        buttonRightStyles.current!.marginLeft = 2 * BLOCK_WIDTH.current + "px";
 
         carouselStyles.current!.transition = "margin-left 1s";
         // ASSIGNEMENT CAROUSELELEMENTS WIDTH AND FINLTERS OPACITY AND TRANSITION
@@ -225,7 +220,6 @@ export function TVCarousel() {
     // MOVING CAROUSEL SCRIPT
 
     useEffect(() => {
-        console.log("useeffect");
         calcIndexR();
         calcIndexL();
 
@@ -237,27 +231,18 @@ export function TVCarousel() {
         switchersStyles.current![choosenElement].backgroundColor = "var(--gray-c2)";
         switchersStyles.current![indexR.current].backgroundColor = "var(--gray-c1)";
 
-
-
-
         if (moveDir.current == 'r') {
-            console.log('1st place', choosenElement - 1);
             let prevChoosenElement = calcChoosenELement(choosenElement - 1, moveDir.current!);
             let indexLL = calcIndexLL(Number(prevChoosenElement));
-            elementsOffsets.current[indexLL] += CAROUSEL_WIDTH;
-            carouselElementsStyles.current![indexLL].transform = 'translate(' + elementsOffsets.current[indexLL] + 'px,0px)';
+            elementsOffsets.current[indexLL] += CAROUSEL_WIDTH.current;
+            carouselElementsStyles.current![indexLL].transform = "translate(" + elementsOffsets.current[indexLL] + "px,0px)";
         }
         if (moveDir.current == 'l') {
-            console.log('3st plave', choosenElement + 1);
             let prevChoosenElement = calcChoosenELement(choosenElement + 1, moveDir.current!);
             let indexRR = calcIndexRR(Number(prevChoosenElement));
-            console.log('INDEXRR IS ', indexRR);
-            elementsOffsets.current[indexRR] -= CAROUSEL_WIDTH;
+            elementsOffsets.current[indexRR] -= CAROUSEL_WIDTH.current;
             carouselElementsStyles.current![indexRR].transform = 'translate(' + elementsOffsets.current[indexRR] + 'px,0px)';
         }
-
-
-
         // if (moveDir.current == 'r') {
         //     elementsOffsets.current[indexLeft] += CAROUSEL_WIDTH;
         //     carouselElementsStyles.current![indexLeft].transform = 'translate(' + elementsOffsets.current[indexLeft] + 'px,0px)';
@@ -267,14 +252,13 @@ export function TVCarousel() {
         //     carouselElementsStyles.current![indexRight].transform = 'translate(' + elementsOffsets.current[indexRight] + 'px,0px)';
         // }
         // HZ
-
-
     }, [choosenElement])
     // CHANGING FILTERS OPACITY WHEN MOVING
 
     function handleLeftArrowClick() {
         // setOffset(offset + BLOCK_WIDTH);
-        setOffset(prevOffset => prevOffset + BLOCK_WIDTH);
+
+        setOffset(prevOffset => prevOffset + BLOCK_WIDTH.current);
 
         moveDir.current = 'l';
         if (choosenElement - 1 >= 0) {
@@ -287,9 +271,8 @@ export function TVCarousel() {
         }
     }
     function handleRightArrowClick() {
-        console.log('rightarrowclock');
         // setOffset(offset - BLOCK_WIDTH);
-        setOffset(prevOffset => prevOffset - BLOCK_WIDTH);
+        setOffset(prevOffset => prevOffset - BLOCK_WIDTH.current);
 
         moveDir.current = 'r';
         if (choosenElement + 1 < ELEMENTS_COUNT) {
@@ -343,11 +326,9 @@ export function TVCarousel() {
             <div className="tv-carousel-container">
                 <button className="btn btn-left" ref={buttonLeft} onClick={handleLeftArrowClick}> LL </button>
                 <button className="btn btn-right" ref={buttonRight} onClick={handleRightArrowClick}> RR </button>
-                <div className="tv-carousel-window">
+                <div className="tv-carousel-window" ref={tvCarouselWindow}>
 
                     <div className="tv-carousel-row" ref={carousel}>
-
-                        {/* Можно ли использовать htmlELement для htmlDivElement??*/}
                         {
                             json_info.map(function (elementInfo) {
                                 let id = elementInfo[0] as number;

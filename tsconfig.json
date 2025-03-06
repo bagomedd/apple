@@ -32,6 +32,9 @@
       "@fonts/": [
         "src/fonts/"
       ],
+      "@pages/": [
+        "src/pages/"
+      ],
     }
   }
 }

@@ -6,6 +6,9 @@
 @import "./Common.css";
 @import "./local/TVCarousel.css";
 @import "./local/TVCarouselElement.css";
+@import "./local/HeroFooter.css";
+
+@import "./local/RegisterPage.css";
 
 @font-face {
   font-family: 'Inter';

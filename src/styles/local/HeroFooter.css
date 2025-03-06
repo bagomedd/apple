@@ -1,0 +1,32 @@
+.hero-footer {
+    background-color: var(--light-c1);
+
+
+    .information {
+        justify-self: center;
+        max-width: 1000px;
+        padding-top: 15px;
+        font-size: 8pt;
+        color: var(--gray-c1);
+        letter-spacing: 0.5px;
+        padding-bottom: 15px;
+
+        .agreement {
+            p {}
+        }
+
+        .line {
+            width: inherit;
+            background-color: var(--gray-c1);
+            height: 0.5px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .copyright {}
+
+        .location {
+            float: right;
+        }
+    }
+}

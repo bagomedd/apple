@@ -5,6 +5,8 @@ interface TVCarouselElementInterface {
     carouselElementsRef?: any;
     filtersRef?: any;
 }
+
+
 export function TVCarouselElement({ id, imageUrl, carouselElementsRef, filtersRef }: TVCarouselElementInterface) {
 
 
