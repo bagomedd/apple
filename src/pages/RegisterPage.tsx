@@ -21,12 +21,11 @@ export function RegisterPage() {
         let json_info = JSON.stringify(chmo);
         console.log(json_info);
 
-        fetch('http://192.168.1.221:8080/api/reg', {
+        fetch('http://192.168.132.141:8080/api/reg', {
             "method": "POST",
             "body": json_info,
             "headers": { "Content-type": "application/json" }
-        })
-            .then(resp => { console.log(resp) });
+        });
     }
 
 
