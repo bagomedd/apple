@@ -7,12 +7,12 @@
 @import "./local/TVCarousel.css";
 @import "./local/TVCarouselElement.css";
 @import "./local/HeroFooter.css";
-
 @import "./local/RegisterPage.css";
+
 
 @font-face {
   font-family: 'Inter';
-  src: "@fonts/Inter/Inter-VariableFont_opsz,wght.ttf";
+  src: url("/src/fonts/Inter/Inter.ttf")
 }
 
 :root {
@@ -22,11 +22,14 @@
   --gray-c1: #949494;
   --gray-c2: #333333;
   --dark-c: #000000;
-  --blue-c: #0071E3;
+  --blue-c1: #2f80ec;
+  --blue-c2: #0071E3;
+  --sky-c1: #eff0ff;
 }
 
 
-body {
-  font-family: inter;
+
+* {
+  font-family: Inter;
   margin: 0;
 }

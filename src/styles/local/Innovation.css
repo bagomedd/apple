@@ -9,12 +9,12 @@
     background-repeat: no-repeat;
 
     &.iphone-16-pro {
-        background-image: url("/public/hero_iphone_16_pro_large.jpg");
+        background-image: url("/src/images/hero_iphone_16_pro_large.jpg");
 
     }
 
     &.iphone-16 {
-        background-image: url("/public/hero_iphone_16_large.jpg")
+        background-image: url("/src/images/hero_iphone_16_large.jpg")
     }
 
     .innovation-container {

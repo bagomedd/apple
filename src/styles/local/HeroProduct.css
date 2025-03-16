@@ -67,6 +67,6 @@
         background-repeat: no-repeat;
         background-size: cover;
         background-position: center;
-        background-image: url(/public/promo_apple_watch_series_10_large.jpg);
+        background-image: url(/src/images/promo_apple_watch_series_10_large.jpg);
     }
 }
