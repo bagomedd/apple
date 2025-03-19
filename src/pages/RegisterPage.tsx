@@ -1,29 +1,29 @@
-import { ChangeEvent, useState, useRef } from 'react';
-import { validateRegistration } from "../Components/utils/validateRegistration";
-import { inputTypes } from "../Components/utils/inputTypes";
-
-
+import { useState, useEffect, useRef } from 'react';
+import { validatePasswordsEquality, validateRegistration } from "../utils/validateRegistration";
+import { inputTypesInterface, inputTypes } from "../utils/inputTypes";
+import { cssColors } from '../utils/cssVariables';
+import { Link } from 'react-router';
 
 export function RegisterPage() {
     const SEND_INFO_API = "http://192.168.1.221:8080/api/reg";
 
-    const emailValue = useRef<string>('');
-    const emailElement = useRef<HTMLInputElement | null>(null);
-    const usernameValue = useRef<string>('');
-    const usernameElement = useRef<HTMLInputElement | null>(null);
-    const passwordValue = useRef<string>('');
-    const passwordElement = useRef<HTMLInputElement | null>(null);
-    const confirmPasswordValue = useRef<string>('');
-    const confirmPasswordElement = useRef<HTMLInputElement | null>(null);
+    const [errors, setErrors] = useState<inputTypesInterface>({});
+    const [submitError, setSubmitError] = useState<string>('');
 
-    let errorsInterface: { [propname: string]: string } = {};
-    const [errors, setErrors] = useState(errorsInterface);
-    // const [errors, setErrors] = useState({ email: "", username: "", password: "", confirmPassword: "" });
+    interface inputElementsInterface { [inputType: string]: HTMLInputElement; };
+    const inputElements = useRef<inputElementsInterface>({});
 
-    const myobj: { [propname: string]: string } = {};
+    interface inputValuesInterface { [inputType: string]: string; };
+    const pushInputElements = (inputType: string, element: HTMLInputElement) => { inputElements.current[inputType] = element };
+    const inputValues = useRef<inputValuesInterface>({});
 
+    const submitButton = useRef<HTMLButtonElement | null>(null);
+    const showPasswordButton = useRef<HTMLButtonElement | null>(null);
+    const contentWindow = useRef<HTMLDivElement | null>(null);
 
-
+    useEffect(() => {
+        submitButton.current!.onclick = submitHandler;
+    }, [])
     function jsonConverter(emailValue: string, usernameValue: string, passwordValue: string) {
         return (
             JSON.stringify({
@@ -34,95 +34,89 @@ export function RegisterPage() {
         );
     }
     async function sendInfo() {
-        const json_info = jsonConverter(emailValue.current, usernameValue.current, passwordValue.current);
+        let json_info = jsonConverter(
+            inputValues.current[inputTypes.EMAIL],
+            inputValues.current[inputTypes.USERNAME],
+            inputValues.current[inputTypes.PASSWORD]
+        );
 
-        fetch(SEND_INFO_API, {
-            // mode: 'no-cors',
-            "method": "POST",
-            "headers": { "Content-type": "application/json" },
-            "body": json_info
-        });
-    }
-    function submitHandler() {
-
-        emailValue.current = emailElement.current!.value;
-        usernameValue.current = usernameElement.current!.value;
-        passwordValue.current = passwordElement.current!.value;
-        confirmPasswordValue.current = confirmPasswordElement.current!.value;
-        let error = '';
-        let isRejected = false;
-        let errors = ['', '', '', ''];
-        error = validateRegistration(inputTypes.EMAIL, emailValue.current)
-        // setErrors({ ...errors, [inputTypes.EMAIL!]: error });
-        if (error != '') {
-            errors[0] = error;
-            isRejected = true;
-        }
-
-        error = validateRegistration(inputTypes.USERNAME, usernameValue.current)
-        // setErrors({ ...errors, [inputTypes.USERNAME!]: error });
-        if (error != '') {
-            errors[1] = error;
-            isRejected = true;
-        }
-
-
-        error = validateRegistration(inputTypes.PASSWORD, passwordValue.current)
-        if (error != '') {
-            errors[2] = error;
-            isRejected = true;
-        }
-
-        error = validateRegistration(inputTypes.CONFIRM_PASSWORD, passwordValue.current, confirmPasswordValue.current)
-
-        if (error != '') {
-            errors[3] = error;
-            isRejected = true;
-        }
-        if (isRejected) {
-            setErrors({
-                email: errors[0],
-                username: errors[1],
-                password: errors[2],
-                confirmPassword: errors[3]
+        try {
+            let response = await fetch(SEND_INFO_API, {
+                // mode: 'no-cors',
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: json_info,
+                signal: AbortSignal.timeout(3000)
             });
         }
-        else {
-            sendInfo();
+        catch {
+            setSubmitError('There is some troubles, please, try later');
+        }
+    }
+    async function submitHandler() {
+        setSubmitError('');
+
+        let error = '';
+        let isRejected = false;
+        let errorsArray: inputTypesInterface = {};
+
+        let inputTypesKey: keyof inputTypesInterface;
+        for (inputTypesKey in inputTypes) {
+            inputValues.current[inputTypesKey] = inputElements.current[inputTypesKey].value;
+            error = validateRegistration(inputTypesKey, inputElements.current[inputTypesKey].value);
+            errorsArray[inputTypesKey] = error;
+            if (error != '') {
+                isRejected = true;
+            }
+        }
+        error = validatePasswordsEquality(
+            inputElements.current[inputTypes.PASSWORD].value,
+            inputElements.current[inputTypes.CONFIRM_PASSWORD].value
+        );
+        if (error != '') {
+            errorsArray[inputTypes.CONFIRM_PASSWORD] = error;
+            isRejected = true;
+        }
+
+        setErrors(errorsArray);
+        if (!isRejected) {
+            deactivateSubmitButton();
+            await sendInfo();
+            activateSubmitButton();
         }
     }
     function changeHandler(event: React.ChangeEvent<HTMLInputElement>) {
-
-        let type = event.target.dataset.inputType;
+        let type = event.target.dataset.inputType!;
         let inputValue = event.target.value;
+        let errorsArray: inputTypesInterface = errors;
 
-        if (type == inputTypes.PASSWORD || type == inputTypes.CONFIRM_PASSWORD) {
-            passwordValue.current = passwordElement.current!.value;
-            confirmPasswordValue.current = confirmPasswordElement.current!.value;
-            inputValue = passwordValue.current;
+        errorsArray[type!] = validateRegistration(type!, inputValue);
+        // console.log(errorsArray[type]);
 
-            let secondInputValue = confirmPasswordValue.current;
-            let secondType = inputTypes.CONFIRM_PASSWORD;
-            let error = validateRegistration(type!, inputValue);
-            let secondError = validateRegistration(secondType!, inputValue, secondInputValue);
-
-            focusHandler(undefined, type);
-            setErrors({ ...errors, [type]: error, [secondType]: secondError });
+        if (type == inputTypes.CONFIRM_PASSWORD) {
+            errorsArray[inputTypes.CONFIRM_PASSWORD] = validatePasswordsEquality(
+                inputElements.current[inputTypes.PASSWORD].value,
+                inputElements.current[inputTypes.CONFIRM_PASSWORD].value
+            )
         }
-        else {
-            let error = validateRegistration(type!, inputValue);
-            setErrors({ ...errors, [type!]: error });
-        }
-
-
+        focusHandler(undefined, type!);
+        setErrors({
+            [inputTypes.EMAIL]: errorsArray[inputTypes.EMAIL],
+            [inputTypes.USERNAME]: errorsArray[inputTypes.USERNAME],
+            [inputTypes.PASSWORD]: errorsArray[inputTypes.PASSWORD],
+            [inputTypes.CONFIRM_PASSWORD]: errorsArray[inputTypes.CONFIRM_PASSWORD]
+        });
     }
     function showPassword() {
-        confirmPasswordElement.current!.type = "visiblePassword";
-        passwordElement.current!.type = "visiblePassword";
+        inputElements.current[inputTypes.PASSWORD].type = "visiblePassword";
+        inputElements.current[inputTypes.CONFIRM_PASSWORD].type = "visiblePassword";
+        showPasswordButton.current!.style.backgroundColor = "" + cssColors['--blue-c2'];
     }
     function hidePassword() {
-        passwordElement.current!.type = "password";
-        confirmPasswordElement.current!.type = "password";
+        inputElements.current[inputTypes.PASSWORD].type = "password";
+        inputElements.current[inputTypes.CONFIRM_PASSWORD].type = "password";
+        showPasswordButton.current!.style.backgroundColor = "" + cssColors['--blue-c1'];
+
     }
     function focusHandler(event?: React.FocusEvent<HTMLInputElement>, inputType?: string) {
         let type = ''
@@ -137,157 +131,254 @@ export function RegisterPage() {
         }
 
         if (errors[type] == '') {
-            emailElement.current!.style.outline = "3px solid blue";
+            inputElements.current[type].style.outline = "3px solid" + cssColors['--blue-c1'];
         }
         else {
-            emailElement.current!.style.outline = "3px solid red";
-
+            inputElements.current[type].style.outline = "3px solid" + cssColors['--red-c1'];
         }
     }
+    function blurHandler(event?: React.FocusEvent<HTMLInputElement>, inputType?: string) {
+        let type = ''
+        if (event) {
+            type = event.target.dataset.inputType!;
+        }
+        else if (inputType) {
+            type = inputType;
+        }
+        else {
+            console.log("Focus handler recieved wrong data");
+        }
+
+
+        if (errors[type] == '') {
+            // COLOR
+            inputElements.current[type].style.outline = "0px solid" + cssColors['--blue-c1'];
+        }
+        else {
+            // COLOR
+            inputElements.current[type].style.outline = "0px solid" + cssColors['--red-c1'];
+        }
+    }
+    function deactivateSubmitButton() {
+        submitButton.current!.style.backgroundColor = cssColors['--gray-c1'];
+        submitButton.current!.onclick = null;
+    }
+    function activateSubmitButton() {
+        submitButton.current!.style.backgroundColor = cssColors['--blue-c1'];
+        submitButton.current!.onclick = submitHandler;
+    }
+    function openLoginWindow() {
+        contentWindow.current!.style.marginTop = "-640px";
+    }
+    function openSignUpWindow() {
+        contentWindow.current!.style.marginTop = "0px";
+    }
+
     return (
         <div className="register-page">
+            <Link to="/" className="back"> Back </Link>
             <div className="window">
-                <p className="hero-text"> Register to Apple </p>
-                <form className="form" onSubmit={submitHandler} >
-                    <p className="text-block">
-                        <span className="text"> Email </span>
-                        <span className="error"> {errors.email}</span>
-                    </p>
-                    <input
-                        onFocus={focusHandler}
-                        data-input-type={inputTypes.EMAIL}
-                        placeholder="Email"
-                        className="input email"
-                        type="text"
-                        ref={emailElement}
-                        onChange={changeHandler} />
-                    <p className="text-block">
-                        <span className="text"> Username  </span>
-                        <span className="error"> {errors.username}</span>
-                    </p>
-                    <input
-                        onFocus={focusHandler}
-                        data-input-type={inputTypes.USERNAME}
-                        placeholder="Username"
-                        className="input username"
-                        type="text"
-                        ref={usernameElement}
-                        onChange={changeHandler} />
-                    <p className="text-block">
-                        <span className="text"> Password  </span>
-                        <span className="error"> {errors.password} </span>
-                    </p>
-                    <input
-                        onFocus={focusHandler}
-                        data-input-type={inputTypes.PASSWORD}
-                        placeholder="Password"
-                        className="input password"
-                        type="password"
-                        ref={passwordElement}
-                        onChange={changeHandler} />
-                    <p className="text-block">
-                        <span className="text"> Confirm Password  </span>
-                        <span className="error"> {errors.confirmPassword} </span>
-                    </p>
-                    <input
-                        onFocus={focusHandler}
-                        data-input-type={inputTypes.CONFIRM_PASSWORD}
-                        placeholder="Confirm Password"
-                        className="input password"
-                        type="password"
-                        ref={confirmPasswordElement}
-                        onChange={changeHandler} />
-                    <div className="helpful-panel">
-                        <span
-                            className="show-password"
-                            onMouseDown={showPassword}
-                            onMouseUp={hidePassword}
-                            onMouseLeave={hidePassword}
-                        >
-                            Show password
-                        </span>
-                        <span className="forgot-password">
-                            Forgot password?
-                        </span>
-                    </div>
-                    <div className="submit">
+                <div className="content-window" ref={contentWindow}>
+                    <div className="register-window">
+                        <p className="hero-text"> Register to Apple </p>
+                        <form className="form" onSubmit={submitHandler} >
+                            <p className="text-block">
+                                <span className="text"> Email </span>
+                                <span className="error"> {errors[inputTypes.EMAIL]}</span>
+                            </p>
+                            <input
+                                data-input-type={inputTypes.EMAIL}
+                                placeholder="Email"
+                                className="input email"
+                                type="text"
+                                ref={(element) => { pushInputElements(inputTypes.EMAIL, element!) }}
+                                onChange={changeHandler}
+                                onFocus={focusHandler}
+                                onBlur={blurHandler}
+                            />
+                            <p className="text-block">
+                                <span className="text"> Username  </span>
+                                <span className="error"> {errors[inputTypes.USERNAME]}</span>
+                            </p>
+                            <input
+                                data-input-type={inputTypes.USERNAME}
+                                placeholder="Username"
+                                className="input username"
+                                type="text"
+                                ref={(element) => { pushInputElements(inputTypes.USERNAME, element!) }}
+                                onChange={changeHandler}
+                                onFocus={focusHandler}
+                                onBlur={blurHandler}
+                            />
+                            <p className="text-block">
+                                <span className="text"> Password  </span>
+                                <span className="error"> {errors[inputTypes.PASSWORD]} </span>
+                            </p>
+                            <input
+                                data-input-type={inputTypes.PASSWORD}
+                                placeholder="Password"
+                                className="input password"
+                                type="password"
+                                ref={(element) => { pushInputElements(inputTypes.PASSWORD, element!) }}
+                                onChange={changeHandler}
+                                onFocus={focusHandler}
+                                onBlur={blurHandler}
+                            />
+                            <p className="text-block">
+                                <span className="text"> Confirm Password  </span>
+                                <span className="error"> {errors[inputTypes.CONFIRM_PASSWORD]} </span>
+                            </p>
+                            <input
+                                data-input-type={inputTypes.CONFIRM_PASSWORD}
+                                placeholder="Confirm Password"
+                                className="input password"
+                                type="password"
+                                ref={(element) => { pushInputElements(inputTypes.CONFIRM_PASSWORD, element!) }}
+                                onChange={changeHandler}
+                                onFocus={focusHandler}
+                                onBlur={blurHandler}
+                            />
+                            <div className="helpful-panel">
+                                <button
+                                    className="btn show-password"
+                                    type="button"
+                                    onMouseDown={showPassword}
+                                    onMouseUp={hidePassword}
+                                    onMouseLeave={hidePassword}
+                                    ref={showPasswordButton}
+                                >
+                                    Show password
+                                </button>
+                                {/* <span className="forgot-password">
+                                    Forgot password?
+                                </span> */}
+                            </div>
+                            <div className="submit">
 
-                        <input
-                            className="submit"
-                            type="button"
-                            onClick={submitHandler}
-                            value="Sign Up" />
+                                <button
+                                    className="btn submit-btn"
+                                    type="button"
+                                    onClick={submitHandler}
+
+                                    ref={submitButton}
+                                >
+                                    Sign Up
+                                </button>
+                                <div className="error-space">
+                                    <span className="error"> {submitError} </span>
+                                </div>
+                            </div>
+                        </form >
+                        <div className="or">
+                            <div className="line"></div>
+                            <span className="text">or</span>
+                            <div className="line"></div>
+
+                        </div>
+                        <div className="button-panel">
+                            <button className="btn google-button"> Google </button>
+                            <button
+                                className="btn  login-button"
+                                onClick={openLoginWindow}
+                            > Login </button>
+                        </div>
                     </div>
-                </form >
+                    <div className="login-window">
+
+                        <p className="hero-text"> Login to Apple </p>
+                        {/* <form className="form" onSubmit={submitHandler} > */}
+                        <form className="form" >
+                            <p className="text-block">
+                                <span className="text"> Email </span>
+                                {/* <span className="error"> {errors[inputTypes.EMAIL]}</span> */}
+                            </p>
+                            <input
+                                // data-input-type={inputTypes.EMAIL}
+                                placeholder="Email"
+                                className="input email"
+                                type="text"
+                            // ref={(element) => { pushInputElements(inputTypes.EMAIL, element!) }}
+                            // onChange={changeHandler}
+                            // onFocus={focusHandler}
+                            // onBlur={blurHandler}
+                            />
+                            <p className="text-block">
+                                <span className="text"> Username  </span>
+                                {/* <span className="error"> {errors[inputTypes.USERNAME]}</span> */}
+                            </p>
+                            <input
+                                // data-input-type={inputTypes.USERNAME}
+                                placeholder="Username"
+                                className="input username"
+                                type="text"
+                            // ref={(element) => { pushInputElements(inputTypes.USERNAME, element!) }}
+                            // onChange={changeHandler}
+                            // onFocus={focusHandler}
+                            // onBlur={blurHandler}
+                            />
+                            <p className="text-block">
+                                <span className="text"> Password  </span>
+                                {/* <span className="error"> {errors[inputTypes.PASSWORD]} </span> */}
+                            </p>
+                            <input
+                                // data-input-type={inputTypes.PASSWORD}
+                                placeholder="Password"
+                                className="input password"
+                                type="password"
+                            // ref={(element) => { pushInputElements(inputTypes.PASSWORD, element!) }}
+                            // onChange={changeHandler}
+                            // onFocus={focusHandler}
+                            // onBlur={blurHandler}
+                            />
+
+                            <div className="helpful-panel">
+                                <button
+                                    className="btn show-password"
+                                    type="button"
+                                // onMouseDown={showPassword}
+                                // onMouseUp={hidePassword}
+                                // onMouseLeave={hidePassword}
+                                // ref={showPasswordButton}
+                                >
+                                    Show password
+                                </button>
+                                <span className="forgot-password">
+                                    Forgot password?
+                                </span>
+                            </div>
+                            <div className="submit">
+
+                                <button
+                                    className="btn submit-btn"
+                                    type="button"
+                                // onClick={submitHandler}
+
+                                // ref={submitButton}
+                                >
+                                    Log in
+                                </button>
+                                <div className="error-space">
+                                    {/* <span className="error"> {submitError} </span> */}
+                                </div>
+                            </div>
+                        </form >
+                        <div className="or">
+                            <div className="line"></div>
+                            <span className="text">or</span>
+                            <div className="line"></div>
+
+                        </div>
+                        <div className="button-panel">
+                            <button className="btn google-button"> Google </button>
+                            <button
+                                className="btn  login-button"
+                                onClick={openSignUpWindow}
+                            > Sign Up </button>
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </div>
     );
 }
-
-
-
-// import Input from "./Input";
-
-// function Form({ title, span }) {
-//     const EmailRegexp = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-//     async function submitHandler() {
-//         const data = {
-//             email: "helloworld@gmail.com",
-//             username: 'Piska',
-//             password: '123',
-//         };
-
-//         try {
-//             const response = await fetch('http://192.168.1.221:8080/api/reg', {
-//                 method: "POST",
-//                 body: JSON.stringify(data), // Преобразуем объект в JSON
-//                 headers: {
-//                     "Content-Type": "application/json", // Указываем тип содержимого
-//                 },
-//             });
-
-//             if (!response.ok) {
-//                 throw new Error("Ошибка при отправке запроса");
-//             }
-
-//             const result = await response.json(); // Парсим ответ от сервера
-//             console.log("Успешно:", result);
-//         } catch (error) {
-//             console.error("Ошибка:", error);
-//         }
-//     }
-
-//     return (
-//         <form>
-//             <h1>{title}</h1>
-//             <span>{span}</span>
-//             <ul>
-//                 <li>
-//                     <Input
-//                         type={'text'}
-//                         placeholder={'Name'}
-//                         validators={{ isEmpty: 4, minLength: 4 }}
-//                     />
-//                 </li>
-//                 <li>
-//                     <Input
-//                         type={'email'}
-//                         placeholder={'Email'}
-//                         validators={{ isEmpty: 4, maskError: EmailRegexp }}
-//                     />
-//                 </li>
-//                 <li>
-//                     <Input
-//                         type={'password'}
-//                         placeholder={'Password'}
-//                         validators={{ isEmpty: 4, minLength: 4 }}
-//                     />
-//                 </li>
-//             </ul>
-//             <input type="button" onClick={submitHandler} value="Отправить" />
-//         </form>
-//     );
-// }
-
-// export default Form;* /

@@ -1,9 +1,6 @@
 import { inputTypes } from "./inputTypes";
-/**
- * @param secondInputValue only for type = inputTypes.CONFIRM_PASSWORD
- *  */
 
-export function validateRegistration(type: string, inputValue: string, secondInputValue?: string) {
+export function validateRegistration(type: string, inputValue: string) {
     let error = "";
     // VALIDATE EMAIL
     if (type == inputTypes.EMAIL) {
@@ -33,15 +30,14 @@ export function validateRegistration(type: string, inputValue: string, secondInp
         }
     }
 
-    //VALIDATE CONFIRM PASSWORD
-    if (type == inputTypes.CONFIRM_PASSWORD) {
+    return error;
+}
 
-        if (inputValue != secondInputValue) {
-            error = "Passwords must be the same"
-        }
+export function validatePasswordsEquality(password: string, confirmPassword: string) {
+    let error = '';
+
+    if (password != confirmPassword) {
+        error = "Passwords must be the same"
     }
-
-
-
     return error;
 }

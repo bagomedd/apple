@@ -45,13 +45,13 @@
 
                 &.learn-more {
                     color: var(--light-c1);
-                    border-color: var(--blue-c);
-                    background-color: var(--blue-c);
+                    border-color: var(--blue-c1);
+                    background-color: var(--blue-c1);
                 }
 
                 &.buy {
-                    color: var(--blue-c);
-                    border-color: var(--blue-c);
+                    color: var(--blue-c1);
+                    border-color: var(--blue-c1);
                 }
             }
         }
