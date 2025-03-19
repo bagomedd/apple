@@ -5,34 +5,36 @@ import { inputTypes } from "../Components/utils/inputTypes";
 
 
 export function RegisterPage() {
-
-
-
     const SEND_INFO_API = "http://192.168.1.221:8080/api/reg";
 
     const emailValue = useRef<string>('');
     const emailElement = useRef<HTMLInputElement | null>(null);
-    const loginValue = useRef<string>('');
-    const loginElement = useRef<HTMLInputElement | null>(null);
+    const usernameValue = useRef<string>('');
+    const usernameElement = useRef<HTMLInputElement | null>(null);
     const passwordValue = useRef<string>('');
     const passwordElement = useRef<HTMLInputElement | null>(null);
     const confirmPasswordValue = useRef<string>('');
     const confirmPasswordElement = useRef<HTMLInputElement | null>(null);
-    const [errors, setErrors] = useState({ email: "", username: "", password: "", confirmPassword: "" });
+
+    let errorsInterface: { [propname: string]: string } = {};
+    const [errors, setErrors] = useState(errorsInterface);
+    // const [errors, setErrors] = useState({ email: "", username: "", password: "", confirmPassword: "" });
+
+    const myobj: { [propname: string]: string } = {};
 
 
 
-    function jsonConverter(emailValue: string, loginValue: string, passwordValue: string) {
+    function jsonConverter(emailValue: string, usernameValue: string, passwordValue: string) {
         return (
             JSON.stringify({
                 "email": emailValue,
-                "username": loginValue,
+                "username": usernameValue,
                 "password": passwordValue
             })
         );
     }
     async function sendInfo() {
-        const json_info = jsonConverter(emailValue.current, loginValue.current, passwordValue.current);
+        const json_info = jsonConverter(emailValue.current, usernameValue.current, passwordValue.current);
 
         fetch(SEND_INFO_API, {
             // mode: 'no-cors',
@@ -42,31 +44,69 @@ export function RegisterPage() {
         });
     }
     function submitHandler() {
+
         emailValue.current = emailElement.current!.value;
-        loginValue.current = loginElement.current!.value;
+        usernameValue.current = usernameElement.current!.value;
         passwordValue.current = passwordElement.current!.value;
         confirmPasswordValue.current = confirmPasswordElement.current!.value;
-        sendInfo();
+        let error = '';
+        let isRejected = false;
+        let errors = ['', '', '', ''];
+        error = validateRegistration(inputTypes.EMAIL, emailValue.current)
+        // setErrors({ ...errors, [inputTypes.EMAIL!]: error });
+        if (error != '') {
+            errors[0] = error;
+            isRejected = true;
+        }
+
+        error = validateRegistration(inputTypes.USERNAME, usernameValue.current)
+        // setErrors({ ...errors, [inputTypes.USERNAME!]: error });
+        if (error != '') {
+            errors[1] = error;
+            isRejected = true;
+        }
+
+
+        error = validateRegistration(inputTypes.PASSWORD, passwordValue.current)
+        if (error != '') {
+            errors[2] = error;
+            isRejected = true;
+        }
+
+        error = validateRegistration(inputTypes.CONFIRM_PASSWORD, passwordValue.current, confirmPasswordValue.current)
+
+        if (error != '') {
+            errors[3] = error;
+            isRejected = true;
+        }
+        if (isRejected) {
+            setErrors({
+                email: errors[0],
+                username: errors[1],
+                password: errors[2],
+                confirmPassword: errors[3]
+            });
+        }
+        else {
+            sendInfo();
+        }
     }
-    function changeHandler(event: ChangeEvent<HTMLInputElement>) {
+    function changeHandler(event: React.ChangeEvent<HTMLInputElement>) {
 
         let type = event.target.dataset.inputType;
         let inputValue = event.target.value;
-        let secondInputValue = ''
-        let secondType = '';
 
         if (type == inputTypes.PASSWORD || type == inputTypes.CONFIRM_PASSWORD) {
-
             passwordValue.current = passwordElement.current!.value;
             confirmPasswordValue.current = confirmPasswordElement.current!.value;
-
             inputValue = passwordValue.current;
-            secondInputValue = confirmPasswordValue.current;
-            secondType = inputTypes.CONFIRM_PASSWORD;
 
+            let secondInputValue = confirmPasswordValue.current;
+            let secondType = inputTypes.CONFIRM_PASSWORD;
             let error = validateRegistration(type!, inputValue);
             let secondError = validateRegistration(secondType!, inputValue, secondInputValue);
 
+            focusHandler(undefined, type);
             setErrors({ ...errors, [type]: error, [secondType]: secondError });
         }
         else {
@@ -84,6 +124,26 @@ export function RegisterPage() {
         passwordElement.current!.type = "password";
         confirmPasswordElement.current!.type = "password";
     }
+    function focusHandler(event?: React.FocusEvent<HTMLInputElement>, inputType?: string) {
+        let type = ''
+        if (event) {
+            type = event.target.dataset.inputType!;
+        }
+        else if (inputType) {
+            type = inputType;
+        }
+        else {
+            console.log("Focus handler recieved wrong data");
+        }
+
+        if (errors[type] == '') {
+            emailElement.current!.style.outline = "3px solid blue";
+        }
+        else {
+            emailElement.current!.style.outline = "3px solid red";
+
+        }
+    }
     return (
         <div className="register-page">
             <div className="window">
@@ -94,6 +154,7 @@ export function RegisterPage() {
                         <span className="error"> {errors.email}</span>
                     </p>
                     <input
+                        onFocus={focusHandler}
                         data-input-type={inputTypes.EMAIL}
                         placeholder="Email"
                         className="input email"
@@ -105,17 +166,19 @@ export function RegisterPage() {
                         <span className="error"> {errors.username}</span>
                     </p>
                     <input
+                        onFocus={focusHandler}
                         data-input-type={inputTypes.USERNAME}
                         placeholder="Username"
-                        className="input login"
+                        className="input username"
                         type="text"
-                        ref={loginElement}
+                        ref={usernameElement}
                         onChange={changeHandler} />
                     <p className="text-block">
                         <span className="text"> Password  </span>
                         <span className="error"> {errors.password} </span>
                     </p>
                     <input
+                        onFocus={focusHandler}
                         data-input-type={inputTypes.PASSWORD}
                         placeholder="Password"
                         className="input password"
@@ -127,18 +190,26 @@ export function RegisterPage() {
                         <span className="error"> {errors.confirmPassword} </span>
                     </p>
                     <input
+                        onFocus={focusHandler}
                         data-input-type={inputTypes.CONFIRM_PASSWORD}
                         placeholder="Confirm Password"
                         className="input password"
                         type="password"
                         ref={confirmPasswordElement}
                         onChange={changeHandler} />
-                    <div
-                        onMouseDown={showPassword}
-                        onMouseUp={hidePassword}
-                        onMouseLeave={hidePassword}
-                        className="show-password"
-                    > Show password</div>
+                    <div className="helpful-panel">
+                        <span
+                            className="show-password"
+                            onMouseDown={showPassword}
+                            onMouseUp={hidePassword}
+                            onMouseLeave={hidePassword}
+                        >
+                            Show password
+                        </span>
+                        <span className="forgot-password">
+                            Forgot password?
+                        </span>
+                    </div>
                     <div className="submit">
 
                         <input

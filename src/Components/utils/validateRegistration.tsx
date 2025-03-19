@@ -1,4 +1,8 @@
 import { inputTypes } from "./inputTypes";
+/**
+ * @param secondInputValue only for type = inputTypes.CONFIRM_PASSWORD
+ *  */
+
 export function validateRegistration(type: string, inputValue: string, secondInputValue?: string) {
     let error = "";
     // VALIDATE EMAIL

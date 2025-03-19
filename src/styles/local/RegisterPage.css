@@ -5,11 +5,13 @@
     align-items: center;
     justify-content: center;
     display: flex;
-    background-image: url("/src/images/apple.png");
+    background-color: var(--light-c1);
 
 
 
     .window {
+        border: 2px solid var(--dark-c);
+
         padding-top: 30px;
         padding-left: 30px;
         padding-right: 30px;
@@ -48,12 +50,18 @@
 
             .input {
                 background-color: var(--sky-c1);
+                box-sizing: border-box;
                 /* box-sizing: content-box; */
                 border: none;
                 border-radius: 8px;
                 height: 30px;
                 width: 100%;
                 box-shadow: -2px 0px var(--blue-c1);
+                transition: outline 0.1s;
+                outline: none;
+                /* &:focus {
+                    outline: 3px solid var(--blue-c1);
+                } */
             }
 
             .submit {
@@ -73,10 +81,37 @@
                     cursor: pointer;
                     width: 100%;
                     height: 100%;
-
                 }
+
+
             }
 
+            .helpful-panel {
+                margin-top: 15px;
+
+                .show-password {
+                    background-color: var(--blue-c1);
+                    width: max-content;
+                    color: var(--light-c1);
+                    padding: 5px;
+                    border-radius: 8px;
+                    cursor: pointer;
+
+                    -webkit-touch-callout: none;
+                    -webkit-user-select: none;
+                    -khtml-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
+                    user-select: none;
+                }
+
+                .forgot-password {
+                    float: right;
+                    text-decoration-line: underline;
+                    cursor: pointer;
+                }
+
+            }
         }
     }
 }
