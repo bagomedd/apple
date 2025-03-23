@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef, ReactNode } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { validatePasswordsEquality, validateRegistration } from "../../utils/validateRegistration";
 import { inputTypesInterface, inputTypes, emptyInputTypes, toInputKey } from "../../utils/inputTypes";
 import * as auth from "../../utils/commonAuthFunctions";
-import { REG_API } from "../../utils/api";
-import { register } from 'module';
+import { LOG_API } from "../../utils/api";
 
-export function RegisterWindow({ children }: React.PropsWithChildren) {
+
+export function LoginWindow({ children }: React.PropsWithChildren) {
     const [errors, setErrors] = useState<inputTypesInterface>(emptyInputTypes);
     const [submitError, setSubmitError] = useState<string>('');
 
@@ -14,14 +14,14 @@ export function RegisterWindow({ children }: React.PropsWithChildren) {
     const inputValues = useRef<auth.inputValuesInterface>({});
     const submitButton = useRef<HTMLButtonElement | null>(null);
     const showPasswordButton = useRef<HTMLButtonElement | null>(null);
-    const registerWindow = useRef<HTMLDivElement | null>(null);
+    const loginWindow = useRef<HTMLDivElement | null>(null);
     useEffect(() => {
         submitButton.current!.onclick = submitHandler;
     }, [])
 
     async function submitHandler() {
         setSubmitError('');
-
+        // console.log("123");
 
         let error = '';
         let isRejected = false;
@@ -36,10 +36,7 @@ export function RegisterWindow({ children }: React.PropsWithChildren) {
                 isRejected = true;
             }
         }
-        error = validatePasswordsEquality(
-            inputElements.current[inputTypes.PASSWORD].value,
-            inputElements.current[inputTypes.CONFIRM_PASSWORD].value
-        );
+
         if (error != '') {
             errorsArray[inputTypes.CONFIRM_PASSWORD] = error;
             isRejected = true;
@@ -49,7 +46,7 @@ export function RegisterWindow({ children }: React.PropsWithChildren) {
         if (!isRejected) {
             auth.deactivateSubmitButton(submitButton.current!);
             let localSubmitError = await auth.sendInfo(
-                REG_API,
+                LOG_API,
                 inputValues.current![inputTypes.EMAIL],
                 inputValues.current![inputTypes.USERNAME],
                 inputValues.current![inputTypes.PASSWORD]
@@ -68,26 +65,20 @@ export function RegisterWindow({ children }: React.PropsWithChildren) {
         errorsArray[toInputKey(type!)!] = validateRegistration(type!, inputValue);
         // console.log(errorsArray[type]);
 
-        if (type == inputTypes.CONFIRM_PASSWORD || type == inputTypes.PASSWORD) {
-            errorsArray[inputTypes.CONFIRM_PASSWORD] = validatePasswordsEquality(
-                inputElements.current[inputTypes.PASSWORD].value,
-                inputElements.current[inputTypes.CONFIRM_PASSWORD].value
-            )
-        }
         auth.inputFocusHandler(type!, errors, inputElements.current);
         setErrors({
             [inputTypes.EMAIL]: errorsArray[inputTypes.EMAIL],
             [inputTypes.USERNAME]: errorsArray[inputTypes.USERNAME],
             [inputTypes.PASSWORD]: errorsArray[inputTypes.PASSWORD],
-            [inputTypes.CONFIRM_PASSWORD]: errorsArray[inputTypes.CONFIRM_PASSWORD]
+            [inputTypes.CONFIRM_PASSWORD]: ""
         });
     }
 
 
 
     return (
-        <div className="register-window" ref={registerWindow}>
-            <p className="hero-text"> Register to Apple </p>
+        <div className="register-window" ref={loginWindow}>
+            <p className="hero-text"> Login to Apple </p>
             <form className="form" onSubmit={submitHandler} >
                 <p className="text-block">
                     <span className="text"> Email </span>
@@ -133,21 +124,7 @@ export function RegisterWindow({ children }: React.PropsWithChildren) {
                     onBlur={(event) => { auth.inputBlurHandler(inputTypes.PASSWORD, errors, inputElements.current) }}
 
                 />
-                <p className="text-block">
-                    <span className="text"> Confirm Password  </span>
-                    <span className="error"> {errors[inputTypes.CONFIRM_PASSWORD]} </span>
-                </p>
-                <input
-                    data-input-type={inputTypes.CONFIRM_PASSWORD}
-                    placeholder="Confirm Password"
-                    className="input password"
-                    type="password"
-                    ref={(element) => { pushInputElements(inputTypes.CONFIRM_PASSWORD, element!) }}
-                    onChange={changeHandler}
-                    onFocus={(event) => { auth.inputFocusHandler(inputTypes.CONFIRM_PASSWORD, errors, inputElements.current) }}
-                    onBlur={(event) => { auth.inputBlurHandler(inputTypes.CONFIRM_PASSWORD, errors, inputElements.current) }}
 
-                />
                 <div className="helpful-panel">
                     <button
                         className="btn show-password"
@@ -155,21 +132,21 @@ export function RegisterWindow({ children }: React.PropsWithChildren) {
                         onMouseDown={() => {
                             auth.showPassword(
                                 inputElements.current[inputTypes.PASSWORD],
-                                inputElements.current[inputTypes.CONFIRM_PASSWORD],
+                                null,
                                 showPasswordButton.current!
                             )
                         }}
                         onMouseUp={() => {
                             auth.hidePassword(
                                 inputElements.current[inputTypes.PASSWORD],
-                                inputElements.current[inputTypes.CONFIRM_PASSWORD],
+                                null,
                                 showPasswordButton.current!
                             )
                         }}
                         onMouseLeave={() => {
                             auth.hidePassword(
                                 inputElements.current[inputTypes.PASSWORD],
-                                inputElements.current[inputTypes.CONFIRM_PASSWORD],
+                                null,
                                 showPasswordButton.current!
                             )
                         }}
@@ -177,9 +154,9 @@ export function RegisterWindow({ children }: React.PropsWithChildren) {
                     >
                         Show password
                     </button>
-                    {/* <span className="forgot-password">
-                                    Forgot password?
-                                </span> */}
+                    <span className="forgot-password">
+                        Forgot password?
+                    </span>
                 </div>
                 <div className="submit">
 
@@ -189,7 +166,7 @@ export function RegisterWindow({ children }: React.PropsWithChildren) {
                         // onClick={submitHandler}
                         ref={submitButton}
                     >
-                        Sign Up
+                        Log in
                     </button>
                     <div className="error-space">
                         <span className="error"> {submitError} </span>
@@ -206,7 +183,6 @@ export function RegisterWindow({ children }: React.PropsWithChildren) {
                 <button className="btn google-button"> Google </button>
                 {children}
             </div>
-
         </div>
     );
 }
